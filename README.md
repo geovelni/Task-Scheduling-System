@@ -19,8 +19,8 @@ execuției unor comenzi la momente de timp prestabilite.
 
 | Membru  | Responsabilități                                   |
 |---------|----------------------------------------------------|
-| Geo     | Planificator, Executor, detectarea alertelor       |
-| [Coleg] | Bază de date, interfață CLI, rapoarte, notificări  |
+| Geo Velniceri     | Planificator, Executor, detectarea alertelor       |
+| Rareș Ungureanu | Bază de date, interfață CLI, rapoarte, notificări  |
 
 ## Tehnologii
 
