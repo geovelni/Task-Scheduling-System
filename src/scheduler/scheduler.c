@@ -28,7 +28,7 @@ static long parse_date(const char *text)
     tm.tm_mday  = day;
     tm.tm_hour  = hour;
     tm.tm_min   = minute;
-    tm.tm_isdst = -1;                       /* lasa sistemul sa decida ora de vara */
+    tm.tm_isdst = -1;                       
 
     long t = mktime(&tm);
 
