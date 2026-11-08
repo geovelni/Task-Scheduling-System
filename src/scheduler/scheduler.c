@@ -14,7 +14,7 @@ void format_time(long t, char *buf, int size)
     strftime(buf, size, "%Y-%m-%d %H:%M:%S", localtime(&tt));
 }
 
-/* Transforma "2026-11-02 18:00" in secunde. Intoarce -1 daca e gresita. */
+
 static long parse_date(const char *text)
 {
     struct tm tm = {0};
@@ -32,8 +32,7 @@ static long parse_date(const char *text)
 
     long t = mktime(&tm);
 
-    /* mktime "repara" datele imposibile (ex: 31 februarie -> 3 martie).
-     * Daca s-a schimbat ceva, data initiala era gresita. */
+
     if (t == -1 || tm.tm_mday != day || tm.tm_mon != month - 1 ||
         tm.tm_hour != hour || tm.tm_min != minute)
         return -1;
@@ -55,17 +54,16 @@ int scheduler_first_run(TaskType type, const char *schedule, long *next_run)
         return 0;
     }
 
-    /* TASK_REPEAT */
+    
     if (!cron_is_valid(schedule))
         return ERR_INVALID_CRON;
     long t = cron_next(schedule, now);
     if (t == -1)
-        return ERR_INVALID_CRON;            /* expresie care nu se potriveste niciodata */
+        return ERR_INVALID_CRON;            
     *next_run = t;
     return 0;
 }
 
-/* Se apeleaza din bucla principala, cam o data pe secunda */
 void scheduler_tick(void)
 {
     Task list[MAX_DUE];
@@ -82,9 +80,8 @@ void scheduler_tick(void)
 
         executor_start(t);
 
-        /* Stabilim ce se intampla cu task-ul dupa pornire */
         if (t->type == TASK_ONCE) {
-            t->active = 0;                  /* a rulat o data, gata */
+            t->active = 0;                  
         } else {
             t->next_run = cron_next(t->schedule, now);
             if (t->next_run == -1)
