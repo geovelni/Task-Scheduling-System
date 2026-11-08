@@ -14,25 +14,24 @@
 
 #define MAX_RUNNING 32
 
-/* Un proces copil care ruleaza acum */
 typedef struct {
-    int  pid;              /* 0 = loc liber in tabel */
+    int  pid;            
     int  task_id;
     char name[64];
     long start;
     int  max_duration;
-    int  killed;           /* 1 = l-am oprit noi pentru ca a durat prea mult */
+    int  killed;          
 } Running;
 
 static Running running[MAX_RUNNING];
 
-/* Partea care se executa IN COPIL: pregateste iesirea si ruleaza comanda */
+
 static void run_in_child(Task *t)
 {
-    /* Grup de procese separat, ca sa putem opri si eventualii "nepoti" */
+
     setpgid(0, 0);
 
-    /* Tot ce afiseaza comanda ajunge in output/task_<id>.out */
+   
     char path[128];
     snprintf(path, sizeof(path), "output/task_%d.out", t->id);
 
@@ -43,7 +42,7 @@ static void run_in_child(Task *t)
         close(fd);
     }
 
-    /* Copilul nu are nevoie de socketul serverului sau de baza de date */
+  
     for (int i = 3; i < 1024; i++)
         close(i);
 
@@ -52,10 +51,10 @@ static void run_in_child(Task *t)
     printf("\n===== Rulare %s : %s =====\n", when, t->command);
     fflush(stdout);
 
-    /* "sh -c" ne lasa sa rulam comenzi cu argumente, pipe-uri etc. */
+   
     execl("/bin/sh", "sh", "-c", t->command, (char *)NULL);
 
-    /* Ajungem aici doar daca execl a esuat */
+    
     perror("execl");
     _exit(127);
 }
@@ -88,12 +87,12 @@ void executor_start(Task *t)
     }
 
     if (pid == 0)
-        run_in_child(t);   /* nu se mai intoarce */
+        run_in_child(t);  
 
-    /* Parinte: punem si de aici copilul in grupul lui (evita o cursa) */
+
     setpgid(pid, pid);
 
-    /* Retinem procesul pornit */
+    
     running[slot].pid          = pid;
     running[slot].task_id      = t->id;
     running[slot].start        = time(NULL);
@@ -104,7 +103,7 @@ void executor_start(Task *t)
     log_msg(LOG_INFO, "Task %d (%s) pornit, PID %d: %s", t->id, t->name, pid, t->command);
 }
 
-/* Salveaza rezultatul unui proces terminat si trimite alerta daca e cazul */
+
 static void finish(Running *r, int status)
 {
     Run run = {0};
@@ -113,9 +112,9 @@ static void finish(Running *r, int status)
     run.duration = time(NULL) - r->start;
 
     if (WIFEXITED(status))
-        run.exit_code = WEXITSTATUS(status);        /* s-a terminat normal */
+        run.exit_code = WEXITSTATUS(status);        
     else if (WIFSIGNALED(status))
-        run.exit_code = 128 + WTERMSIG(status);     /* omorat de un semnal */
+        run.exit_code = 128 + WTERMSIG(status);    
 
     if (r->killed)
         strcpy(run.result, "TIMEOUT");
@@ -154,10 +153,10 @@ void executor_check(void)
             continue;
 
         int status;
-        int result = waitpid(r->pid, &status, WNOHANG);   /* WNOHANG = nu astepta */
+        int result = waitpid(r->pid, &status, WNOHANG);   
 
         if (result == r->pid) {
-            finish(r, status);                             /* procesul s-a terminat */
+            finish(r, status);                             
         } else if (result == 0) {
             /* inca ruleaza: verificam daca a depasit durata maxima */
             if (!r->killed && now - r->start > r->max_duration) {
