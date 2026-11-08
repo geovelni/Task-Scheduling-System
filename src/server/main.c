@@ -15,10 +15,10 @@
 
 static volatile int keep_running = 1;
 
-/* Ctrl+C (SIGINT) sau kill (SIGTERM) -> oprim bucla frumos */
+
 static void stop_server(int sig)
 {
-    (void)sig;                  /* nu folosim numarul semnalului */
+    (void)sig;                  
     keep_running = 0;
 }
 
@@ -30,10 +30,10 @@ int main(int argc, char *argv[])
 
     signal(SIGINT, stop_server);
     signal(SIGTERM, stop_server);
-    signal(SIGPIPE, SIG_IGN);   /* un client care inchide brusc nu ne mai opreste serverul */
+    signal(SIGPIPE, SIG_IGN);   
 
     log_open("server.log");
-    mkdir("output", 0755);      /* aici ajunge ce afiseaza task-urile */
+    mkdir("output", 0755);      
 
     if (db_open("scheduler.db") != 0) {
         log_msg(LOG_ERROR, "Nu pot deschide baza de date, opresc serverul");
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     log_msg(LOG_INFO, "Astept clienti si verific task-urile in fiecare secunda");
 
     while (keep_running) {
-        /* Asteptam un client, dar maxim 1 secunda */
+    
         fd_set set;
         FD_ZERO(&set);
         FD_SET(listen_fd, &set);
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         int ready = select(listen_fd + 1, &set, NULL, NULL, &timeout);
 
         if (ready < 0) {
-            if (errno == EINTR)          /* intrerupt de un semnal (ex: Ctrl+C) */
+            if (errno == EINTR)         
                 continue;
             log_msg(LOG_ERROR, "select: %s", strerror(errno));
             break;
