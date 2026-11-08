@@ -1,0 +1,7 @@
+schedulerd
+sched
+*.o
+*.db
+*.log
+output/
+.vscode/
