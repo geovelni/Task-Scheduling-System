@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
         }
 
         if (ready > 0)
-            server_handle_client(listen_fd);   /* a venit un client */
+            server_handle_client(listen_fd);  
 
-        scheduler_tick();     /* pornim task-urile scadente */
-        executor_check();     /* verificam task-urile care ruleaza */
+        scheduler_tick();    
+        executor_check();     
     }
 
     log_msg(LOG_INFO, "Server oprit");
