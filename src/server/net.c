@@ -15,7 +15,7 @@
 #define MAX_TASKS 100
 #define MAX_RUNS  20
 
-/* ---------- Pornirea serverului ---------- */
+
 
 int server_start(int port)
 {
@@ -25,13 +25,13 @@ int server_start(int port)
         return -1;
     }
 
-    /* Permite repornirea imediata pe acelasi port */
+
     int yes = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 
     struct sockaddr_in addr = {0};
     addr.sin_family      = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;                 /* orice adresa a masinii */
+    addr.sin_addr.s_addr = INADDR_ANY;            
     addr.sin_port        = htons(port);
 
     if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
@@ -112,7 +112,7 @@ static void cmd_edit(int fd, const char *line)
     int id, max_duration;
     char schedule[64], command[256];
 
-    /* EDIT <id> <durata_max> "<programare>" <comanda> */
+
     int n = sscanf(line, "EDIT %d %d \"%63[^\"]\" %255[^\n]",
                    &id, &max_duration, schedule, command);
     if (n != 4 || max_duration <= 0) {
@@ -151,7 +151,7 @@ static void cmd_del(int fd, const char *line)
     int id;
     char extra;
 
-    /* "DEL 12" e corect; "DEL abc" sau "DEL 12x" nu (extra ar fi citit ceva) */
+   
     if (sscanf(line, "DEL %d %c", &id, &extra) != 1) {
         send_error(fd, ERR_INVALID_ARGS);
         return;
@@ -233,7 +233,7 @@ static void cmd_help(int fd)
     dprintf(fd, "HELP\n");
 }
 
-/* Alege functia potrivita dupa primul cuvant din mesaj */
+
 static void handle_command(int fd, char *line)
 {
     char cmd[16] = "";
@@ -266,7 +266,7 @@ void server_handle_client(int listen_fd)
         return;
     }
 
-    /* Daca clientul nu trimite nimic in 3 secunde, renuntam la el */
+   
     struct timeval timeout = { 3, 0 };
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 
